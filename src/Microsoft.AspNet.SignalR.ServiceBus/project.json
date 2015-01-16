@@ -1,0 +1,14 @@
+﻿{
+    "version": "3.0.0-*",
+    "dependencies": {
+        "Microsoft.AspNet.SignalR.Server": "3.0.0-*"
+    },
+
+    "frameworks": {
+        "aspnet50": {
+            "dependencies": {
+                "WindowsAzure.ServiceBus": "2.5.4"
+            }
+        }
+    }
+}
