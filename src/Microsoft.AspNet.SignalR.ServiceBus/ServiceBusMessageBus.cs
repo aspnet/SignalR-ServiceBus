@@ -43,6 +43,11 @@ namespace Microsoft.AspNet.SignalR.ServiceBus
                 throw new ArgumentNullException("configuration");
             }
 
+            if(String.IsNullOrEmpty(configuration.TopicPrefix))
+            {
+                throw new InvalidOperationException("TopixPrefix is invalid");
+            }
+
             _logger = loggerFactory.Create<ServiceBusMessageBus>();
 
             _connection = new ServiceBusConnection(configuration, _logger);

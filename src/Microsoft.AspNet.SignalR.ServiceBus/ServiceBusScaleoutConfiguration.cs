@@ -15,11 +15,18 @@ namespace Microsoft.AspNet.SignalR.ServiceBus
         private int _topicCount;
 
         public ServiceBusScaleoutConfiguration()
-            : this("", "")
         {
+            IdleSubscriptionTimeout = TimeSpan.FromHours(1);
+
+            TopicCount = 5;
+            BackoffTime = TimeSpan.FromSeconds(20);
+            TimeToLive = TimeSpan.FromMinutes(1);
+            MaximumMessageSize = 256 * 1024;
+            OperationTimeout = null;
         }
 
         public ServiceBusScaleoutConfiguration(string connectionString, string topicPrefix)
+            : this()
         {
             if (String.IsNullOrEmpty(connectionString))
             {
@@ -28,29 +35,23 @@ namespace Microsoft.AspNet.SignalR.ServiceBus
 
             if (String.IsNullOrEmpty(topicPrefix))
             {
-                throw new ArgumentNullException("topicPrefix");
+                throw new ArgumentNullException("topixPrefix");
             }
 
-            IdleSubscriptionTimeout = TimeSpan.FromHours(1);
             ConnectionString = connectionString;
             TopicPrefix = topicPrefix;
-            TopicCount = 5;
-            BackoffTime = TimeSpan.FromSeconds(20);
-            TimeToLive = TimeSpan.FromMinutes(1);
-            MaximumMessageSize = 256 * 1024;
-            OperationTimeout = null;
         }
 
         /// <summary>
         /// The Service Bus connection string to use.
         /// </summary>
-        public string ConnectionString { get; private set; }
+        public string ConnectionString { get; set; }
 
         /// <summary>
         /// The topic prefix to use. Typically represents the app name.
         /// This must be consistent between all nodes in the web farm.
         /// </summary>
-        public string TopicPrefix { get; private set; }
+        public string TopicPrefix { get; set; }
 
         /// <summary>
         /// The number of topics to send messages over. Using more topics reduces contention and may increase throughput.
@@ -112,6 +113,10 @@ namespace Microsoft.AspNet.SignalR.ServiceBus
         {
             if (OperationTimeout != null)
             {
+                if (String.IsNullOrEmpty(ConnectionString))
+                {
+                    throw new InvalidOperationException("ConnectionString is invalid");
+                }
                 var connectionStringBuilder = new ServiceBusConnectionStringBuilder(ConnectionString);
                 connectionStringBuilder.OperationTimeout = OperationTimeout.Value;
                 return connectionStringBuilder.ToString();
