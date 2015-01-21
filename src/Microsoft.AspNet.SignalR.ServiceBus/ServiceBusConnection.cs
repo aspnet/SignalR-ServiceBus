@@ -16,10 +16,10 @@ namespace Microsoft.AspNet.SignalR.ServiceBus
     internal class ServiceBusConnection : IDisposable
     {
         private const int DefaultReceiveBatchSize = 1000;
-        private static readonly TimeSpan ErrorBackOffAmount = TimeSpan.FromSeconds(5);
-        private static readonly TimeSpan DefaultReadTimeout = TimeSpan.FromSeconds(60);
-        private static readonly TimeSpan ErrorReadTimeout = TimeSpan.FromSeconds(0.5);
-        private static readonly TimeSpan RetryDelay = TimeSpan.FromSeconds(10);
+        private TimeSpan ErrorBackOffAmount;
+        private TimeSpan DefaultReadTimeout;
+        private TimeSpan ErrorReadTimeout;
+        private TimeSpan RetryDelay;
 
         private readonly TimeSpan _backoffTime;
         private readonly TimeSpan _idleSubscriptionTimeout;
@@ -30,7 +30,17 @@ namespace Microsoft.AspNet.SignalR.ServiceBus
         private readonly ILogger _logger;
 
         public ServiceBusConnection(ServiceBusScaleoutConfiguration configuration, ILogger logger)
+            : this(configuration, logger, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(60), TimeSpan.FromSeconds(0.5), TimeSpan.FromSeconds(10))
         {
+        }
+
+        internal ServiceBusConnection(ServiceBusScaleoutConfiguration configuration, ILogger logger, TimeSpan errorBackOffAmount, TimeSpan defaultReadTimeout, TimeSpan errorReadTimeout, TimeSpan retryDelay)
+        {
+            RetryDelay = retryDelay;
+            ErrorReadTimeout = errorReadTimeout;
+            DefaultReadTimeout = defaultReadTimeout;
+            ErrorBackOffAmount = errorBackOffAmount;
+
             _logger = logger;
             _connectionString = configuration.BuildConnectionString();
 
@@ -167,7 +177,7 @@ namespace Microsoft.AspNet.SignalR.ServiceBus
 
                 connectionContext.SetSubscriptionContext(new SubscriptionContext(topicName, subscriptionName, receiver), topicIndex);
 
-                var receiverContext = new ReceiverContext(topicIndex, receiver, connectionContext);
+                var receiverContext = new ReceiverContext(topicIndex, receiver, connectionContext, DefaultReadTimeout);
 
                 ProcessMessages(receiverContext);
 
@@ -177,7 +187,7 @@ namespace Microsoft.AspNet.SignalR.ServiceBus
         }
 
         [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "We retry to create the topics on exceptions")]
-        private void Retry(Action action)
+        internal void Retry(Action action)
         {
             string errorMessage = "Failed to create service bus subscription or topic : {0}";
             while (true)
@@ -360,11 +370,12 @@ namespace Microsoft.AspNet.SignalR.ServiceBus
 
             public ReceiverContext(int topicIndex,
                                    MessageReceiver receiver,
-                                   ServiceBusConnectionContext connectionContext)
+                                   ServiceBusConnectionContext connectionContext,
+                                   TimeSpan defaultReadTimeout)
             {
                 TopicIndex = topicIndex;
                 Receiver = receiver;
-                ReceiveTimeout = DefaultReadTimeout;
+                ReceiveTimeout = defaultReadTimeout;
                 ConnectionContext = connectionContext;
             }
 

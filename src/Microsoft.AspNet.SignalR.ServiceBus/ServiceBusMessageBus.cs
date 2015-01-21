@@ -84,6 +84,7 @@ namespace Microsoft.AspNet.SignalR.ServiceBus
             {
                 // Force the topic to re-open if it was ever closed even if we didn't get any messages
                 Open(topicIndex);
+                return;
             }
 
             foreach (var message in messages)
