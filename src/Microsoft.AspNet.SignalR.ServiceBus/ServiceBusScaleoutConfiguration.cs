@@ -1,9 +1,9 @@
-// Copyright (c) Microsoft Open Technologies, Inc. All rights reserved. See License.md in the project root for license information.
+// Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
 using Microsoft.AspNet.SignalR.Messaging;
 using Microsoft.ServiceBus;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Microsoft.AspNet.SignalR.ServiceBus
 {
