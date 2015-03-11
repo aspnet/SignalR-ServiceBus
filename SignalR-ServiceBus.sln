@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.22418.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Microsoft.AspNet.SignalR.ServiceBus", "src\Microsoft.AspNet.SignalR.ServiceBus\Microsoft.AspNet.SignalR.ServiceBus.kproj", "{1C28C408-C862-4C1B-82B7-616FD5DA9EBE}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Microsoft.AspNet.SignalR.ServiceBus", "src\Microsoft.AspNet.SignalR.ServiceBus\Microsoft.AspNet.SignalR.ServiceBus.xproj", "{1C28C408-C862-4C1B-82B7-616FD5DA9EBE}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Microsoft.AspNet.SignalR.ServiceBus.Tests", "test\Microsoft.AspNet.SignalR.ServiceBus.Tests\Microsoft.AspNet.SignalR.ServiceBus.Tests.kproj", "{6B6A7DD4-5283-44B9-B697-6815CD4DF29E}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Microsoft.AspNet.SignalR.ServiceBus.Tests", "test\Microsoft.AspNet.SignalR.ServiceBus.Tests\Microsoft.AspNet.SignalR.ServiceBus.Tests.xproj", "{6B6A7DD4-5283-44B9-B697-6815CD4DF29E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
