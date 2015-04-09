@@ -1,7 +1,7 @@
 {
     "version": "3.0.0-*",
     "dependencies": {
-        "xunit.runner.kre": "1.0.0-beta3-*",
+        "xunit.runner.aspnet": "2.0.0-aspnet-*",
         "Microsoft.AspNet.SignalR.ServiceBus": "3.0.0-*",
         "Moq": "4.2.1408.619"
     },
@@ -12,6 +12,6 @@
         }
     },
     "commands": {
-        "test": "xunit.runner.kre"
+        "test": "xunit.runner.aspnet"
     }
 }
