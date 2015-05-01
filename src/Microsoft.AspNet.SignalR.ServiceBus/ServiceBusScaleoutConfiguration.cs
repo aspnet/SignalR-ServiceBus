@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
+// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
@@ -76,7 +76,7 @@ namespace Microsoft.AspNet.SignalR.ServiceBus
         }
 
         /// <summary>
-        /// Gets or sets the message’s time to live value. This is the duration after
+        /// Gets or sets the messageï¿½s time to live value. This is the duration after
         /// which the message expires, starting from when the message is sent to the
         /// Service Bus. Messages older than their TimeToLive value will expire and no
         /// longer be retained in the message store. Subscribers will be unable to receive
