@@ -106,14 +106,14 @@ namespace Microsoft.AspNet.SignalR.ServiceBus
 
         private void TraceMessages(IList<Message> messages, string messageType)
         {
-            if (!_logger.IsEnabled(LogLevel.Verbose))
+            if (!_logger.IsEnabled(LogLevel.Debug))
             {
                 return;
             }
 
             foreach (Message message in messages)
             {
-                _logger.WriteVerbose("{0} {1} bytes over Service Bus: {2}", messageType, message.Value.Array.Length, message.GetString());
+                _logger.WriteDebug("{0} {1} bytes over Service Bus: {2}", messageType, message.Value.Array.Length, message.GetString());
             }
         }
 
