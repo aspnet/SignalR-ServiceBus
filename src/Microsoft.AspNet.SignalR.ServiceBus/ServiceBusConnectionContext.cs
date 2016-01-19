@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Microsoft.Framework.Logging;
+using Microsoft.Extensions.Logging;
 using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
 
@@ -13,7 +13,7 @@ namespace Microsoft.AspNet.SignalR.ServiceBus
 {
     public class ServiceBusConnectionContext : IDisposable
     {
-        private readonly ServiceBusScaleoutConfiguration _configuration;
+        private readonly ServiceBusScaleoutOptions _options;
 
         private readonly SubscriptionContext[] _subscriptions;
         private readonly TopicClient[] _topicClients;
@@ -32,7 +32,7 @@ namespace Microsoft.AspNet.SignalR.ServiceBus
 
         public NamespaceManager NamespaceManager { get; set; }
 
-        public ServiceBusConnectionContext(ServiceBusScaleoutConfiguration configuration,
+        public ServiceBusConnectionContext(ServiceBusScaleoutOptions options,
                                            IList<string> topicNames,
                                            ILogger logger,
                                            Action<int, IEnumerable<BrokeredMessage>> handler,
@@ -44,7 +44,7 @@ namespace Microsoft.AspNet.SignalR.ServiceBus
                 throw new ArgumentNullException("topicNames");
             }
 
-            _configuration = configuration;
+            _options = options;
 
             _subscriptions = new SubscriptionContext[topicNames.Count];
             _topicClients = new TopicClient[topicNames.Count];
@@ -69,12 +69,12 @@ namespace Microsoft.AspNet.SignalR.ServiceBus
 
             var message = new BrokeredMessage(stream, ownsStream: true)
             {
-                TimeToLive = _configuration.TimeToLive
+                TimeToLive = _options.TimeToLive
             };
 
-            if (message.Size > _configuration.MaximumMessageSize)
+            if (message.Size > _options.MaximumMessageSize)
             {
-                _logger.WriteWarning("Message size {0}KB exceeds the maximum size limit of {1}KB : {2}", message.Size / 1024, _configuration.MaximumMessageSize / 1024, message);
+                _logger.LogWarning("Message size {0}KB exceeds the maximum size limit of {1}KB : {2}", message.Size / 1024, _options.MaximumMessageSize / 1024, message);
             }
 
             return _topicClients[topicIndex].SendAsync(message);

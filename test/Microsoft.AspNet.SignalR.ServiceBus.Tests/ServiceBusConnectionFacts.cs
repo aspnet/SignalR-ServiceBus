@@ -2,10 +2,9 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
-using System.Collections.Generic;
-using Microsoft.Framework.Logging;
+using Microsoft.AspNet.Testing.xunit;
+using Microsoft.Extensions.Logging;
 using Microsoft.ServiceBus.Messaging;
-using Moq;
 using Xunit;
 
 namespace Microsoft.AspNet.SignalR.ServiceBus.Tests
@@ -14,7 +13,7 @@ namespace Microsoft.AspNet.SignalR.ServiceBus.Tests
     {
         private class Logger : ILogger
         {
-            public IDisposable BeginScope(object state)
+            public IDisposable BeginScopeImpl(object state)
             {
                 throw new NotImplementedException();
             }
@@ -24,12 +23,13 @@ namespace Microsoft.AspNet.SignalR.ServiceBus.Tests
                 throw new NotImplementedException();
             }
 
-            public void Write(LogLevel logLevel, int eventId, object state, Exception exception, Func<object, Exception, string> formatter)
+            public void Log(LogLevel logLevel, int eventId, object state, Exception exception, Func<object, Exception, string> formatter)
             {
             }
         }
 
-        [Fact]
+        [ConditionalFact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono | RuntimeFrameworks.CoreCLR)]
         public void RetryRetriesActionOnStandardException()
         {
             int called = 0;
@@ -43,7 +43,8 @@ namespace Microsoft.AspNet.SignalR.ServiceBus.Tests
             RetryHelper(action, 2, ref called);
         }
 
-        [Fact]
+        [ConditionalFact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono | RuntimeFrameworks.CoreCLR)]
         public void RetryStopsOnUnauthorizedException()
         {
             int called = 0;
@@ -57,7 +58,8 @@ namespace Microsoft.AspNet.SignalR.ServiceBus.Tests
             RetryHelper(action, 1, ref called);
         }
 
-        [Fact]
+        [ConditionalFact]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono | RuntimeFrameworks.CoreCLR)]
         public void RetryRetriesOnTransientMessagingException()
         {
             int called = 0;
@@ -73,7 +75,7 @@ namespace Microsoft.AspNet.SignalR.ServiceBus.Tests
 
         public void RetryHelper(Action action, int ExpectedNum, ref int called)
         {
-            var Connection = new ServiceBusConnection(new ServiceBusScaleoutConfiguration("Endpoint=1", "T"), new Logger(), TimeSpan.FromSeconds(0.1), TimeSpan.FromSeconds(0.1), TimeSpan.FromSeconds(0.1), TimeSpan.FromSeconds(0.1));
+            var Connection = new ServiceBusConnection(new ServiceBusScaleoutOptions("Endpoint=1", "T"), new Logger(), TimeSpan.FromSeconds(0.1), TimeSpan.FromSeconds(0.1), TimeSpan.FromSeconds(0.1), TimeSpan.FromSeconds(0.1));
 
             Connection.Retry(action);
 

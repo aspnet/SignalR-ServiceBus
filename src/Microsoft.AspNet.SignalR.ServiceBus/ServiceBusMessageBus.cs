@@ -8,8 +8,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNet.SignalR.Infrastructure;
 using Microsoft.AspNet.SignalR.Messaging;
-using Microsoft.Framework.Logging;
-using Microsoft.Framework.OptionsModel;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.ServiceBus.Messaging;
 
 namespace Microsoft.AspNet.SignalR.ServiceBus
@@ -31,11 +31,11 @@ namespace Microsoft.AspNet.SignalR.ServiceBus
         public ServiceBusMessageBus(IStringMinifier stringMinifier,
                                      ILoggerFactory loggerFactory,
                                      IPerformanceCounterManager performanceCounterManager,
-                                     IOptions<SignalROptions> optionsAccessor,
-                                     IOptions<ServiceBusScaleoutConfiguration> scaleoutConfigurationAccessor)
+                                     IOptions<MessageBusOptions> optionsAccessor,
+                                     IOptions<ServiceBusScaleoutOptions> scaleoutConfigurationAccessor)
             : base(stringMinifier, loggerFactory, performanceCounterManager, optionsAccessor, scaleoutConfigurationAccessor)
         {
-            var configuration = scaleoutConfigurationAccessor.Options;
+            var configuration = scaleoutConfigurationAccessor.Value;
 
             if (configuration == null)
             {
@@ -47,7 +47,7 @@ namespace Microsoft.AspNet.SignalR.ServiceBus
                 throw new InvalidOperationException("TopixPrefix is invalid");
             }
 
-            _logger = loggerFactory.Create<ServiceBusMessageBus>();
+            _logger = loggerFactory.CreateLogger<ServiceBusMessageBus>();
 
             _connection = new ServiceBusConnection(configuration, _logger);
 
@@ -113,7 +113,7 @@ namespace Microsoft.AspNet.SignalR.ServiceBus
 
             foreach (Message message in messages)
             {
-                _logger.WriteDebug("{0} {1} bytes over Service Bus: {2}", messageType, message.Value.Array.Length, message.GetString());
+                _logger.LogDebug("{0} {1} bytes over Service Bus: {2}", messageType, message.Value.Array.Length, message.GetString());
             }
         }
 

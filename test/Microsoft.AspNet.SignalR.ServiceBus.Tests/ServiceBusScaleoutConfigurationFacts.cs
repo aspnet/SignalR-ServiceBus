@@ -15,7 +15,7 @@ namespace Microsoft.AspNet.SignalR.ServiceBus.Tests
         [InlineData("", "topic")]
         public void ValidateArguments(string connectionString, string topicPrefix)
         {
-            Assert.Throws<ArgumentNullException>(() => new ServiceBusScaleoutConfiguration(connectionString, topicPrefix));
+            Assert.Throws<ArgumentNullException>(() => new ServiceBusScaleoutOptions(connectionString, topicPrefix));
         }
 
         [Theory]
@@ -23,14 +23,14 @@ namespace Microsoft.AspNet.SignalR.ServiceBus.Tests
         [InlineData(-1)]
         public void ValidateTopicCount(int topicCount)
         {
-            var config = new ServiceBusScaleoutConfiguration("cs", "topic");
+            var config = new ServiceBusScaleoutOptions("cs", "topic");
             Assert.Throws<ArgumentOutOfRangeException>(() => config.TopicCount = topicCount);
         }
 
         [Fact]
         public void PositiveTopicCountsWork()
         {
-            var config = new ServiceBusScaleoutConfiguration("cs", "topic");
+            var config = new ServiceBusScaleoutOptions("cs", "topic");
             config.TopicCount = 1;
         }
     }

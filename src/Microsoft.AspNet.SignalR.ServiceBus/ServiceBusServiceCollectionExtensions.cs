@@ -4,25 +4,15 @@
 using System;
 using Microsoft.AspNet.SignalR.ServiceBus;
 using Microsoft.AspNet.SignalR.Messaging;
-using Microsoft.Framework.ConfigurationModel;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.Framework.DependencyInjection
 {
     public static class RedisServiceCollectionExtensions
     {
-        public static IServiceCollection AddServiceBus(this IServiceCollection services, Action<ServiceBusScaleoutConfiguration> configureOptions = null)
-        {
-            return services.AddServiceBus(configuration: null, configureOptions: configureOptions);
-        }
-
-        public static IServiceCollection AddServiceBus(this IServiceCollection services, IConfiguration configuration, Action<ServiceBusScaleoutConfiguration> configureOptions)
+        public static IServiceCollection AddServiceBus(this IServiceCollection services, Action<ServiceBusScaleoutOptions> configureOptions = null)
         {
             services.AddSingleton<IMessageBus, ServiceBusMessageBus>();
-
-            if (configuration != null)
-            {
-                services.Configure<ServiceBusScaleoutConfiguration>(configuration);
-            }
 
             if (configureOptions != null)
             {

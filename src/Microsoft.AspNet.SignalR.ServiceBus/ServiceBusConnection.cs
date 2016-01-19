@@ -7,7 +7,7 @@ using System.Configuration;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Framework.Logging;
+using Microsoft.Extensions.Logging;
 using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
 
@@ -25,16 +25,16 @@ namespace Microsoft.AspNet.SignalR.ServiceBus
         private readonly TimeSpan _idleSubscriptionTimeout;
         private readonly NamespaceManager _namespaceManager;
         private readonly MessagingFactory _factory;
-        private readonly ServiceBusScaleoutConfiguration _configuration;
+        private readonly ServiceBusScaleoutOptions _options;
         private readonly string _connectionString;
         private readonly ILogger _logger;
 
-        public ServiceBusConnection(ServiceBusScaleoutConfiguration configuration, ILogger logger)
-            : this(configuration, logger, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(60), TimeSpan.FromSeconds(0.5), TimeSpan.FromSeconds(10))
+        public ServiceBusConnection(ServiceBusScaleoutOptions options, ILogger logger)
+            : this(options, logger, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(60), TimeSpan.FromSeconds(0.5), TimeSpan.FromSeconds(10))
         {
         }
 
-        internal ServiceBusConnection(ServiceBusScaleoutConfiguration configuration, ILogger logger, TimeSpan errorBackOffAmount, TimeSpan defaultReadTimeout, TimeSpan errorReadTimeout, TimeSpan retryDelay)
+        internal ServiceBusConnection(ServiceBusScaleoutOptions options, ILogger logger, TimeSpan errorBackOffAmount, TimeSpan defaultReadTimeout, TimeSpan errorReadTimeout, TimeSpan retryDelay)
         {
             RetryDelay = retryDelay;
             ErrorReadTimeout = errorReadTimeout;
@@ -42,16 +42,16 @@ namespace Microsoft.AspNet.SignalR.ServiceBus
             ErrorBackOffAmount = errorBackOffAmount;
 
             _logger = logger;
-            _connectionString = configuration.BuildConnectionString();
+            _connectionString = options.BuildConnectionString();
 
             try
             {
                 _namespaceManager = NamespaceManager.CreateFromConnectionString(_connectionString);
                 _factory = MessagingFactory.CreateFromConnectionString(_connectionString);
 
-                if (configuration.RetryPolicy != null)
+                if (options.RetryPolicy != null)
                 {
-                    _factory.RetryPolicy = configuration.RetryPolicy;
+                    _factory.RetryPolicy = options.RetryPolicy;
                 }
                 else
                 {
@@ -60,13 +60,13 @@ namespace Microsoft.AspNet.SignalR.ServiceBus
             }
             catch (ConfigurationException)
             {
-                _logger.WriteError("The configured Service Bus connection string contains an invalid property. Check the exception details for more information.");
+                _logger.LogError("The configured Service Bus connection string contains an invalid property. Check the exception details for more information.");
                 throw;
             }
 
-            _backoffTime = configuration.BackoffTime;
-            _idleSubscriptionTimeout = configuration.IdleSubscriptionTimeout;
-            _configuration = configuration;
+            _backoffTime = options.BackoffTime;
+            _idleSubscriptionTimeout = options.IdleSubscriptionTimeout;
+            _options = options;
         }
 
         [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "The disposable is returned to the caller")]
@@ -77,7 +77,7 @@ namespace Microsoft.AspNet.SignalR.ServiceBus
                 throw new ArgumentNullException("connectionContext");
             }
 
-            _logger.WriteInformation("Subscribing to {0} topic(s) in the service bus...", connectionContext.TopicNames.Count);
+            _logger.LogInformation("Subscribing to {0} topic(s) in the service bus...", connectionContext.TopicNames.Count);
 
             connectionContext.NamespaceManager = _namespaceManager;
 
@@ -86,7 +86,7 @@ namespace Microsoft.AspNet.SignalR.ServiceBus
                 Retry(() => CreateTopic(connectionContext, topicIndex));
             }
 
-            _logger.WriteInformation("Subscription to {0} topics in the service bus Topic service completed successfully.", connectionContext.TopicNames.Count);
+            _logger.LogInformation("Subscription to {0} topics in the service bus Topic service completed successfully.", connectionContext.TopicNames.Count);
         }
 
         private void CreateTopic(ServiceBusConnectionContext connectionContext, int topicIndex)
@@ -104,26 +104,26 @@ namespace Microsoft.AspNet.SignalR.ServiceBus
                 {
                     try
                     {
-                        _logger.WriteInformation("Creating a new topic {0} in the service bus...", topicName);
+                        _logger.LogInformation("Creating a new topic {0} in the service bus...", topicName);
 
                         _namespaceManager.CreateTopic(topicName);
 
-                        _logger.WriteInformation("Creation of a new topic {0} in the service bus completed successfully.", topicName);
+                        _logger.LogInformation("Creation of a new topic {0} in the service bus completed successfully.", topicName);
 
                     }
                     catch (MessagingEntityAlreadyExistsException)
                     {
                         // The entity already exists
-                        _logger.WriteInformation("Creation of a new topic {0} threw an MessagingEntityAlreadyExistsException.", topicName);
+                        _logger.LogInformation("Creation of a new topic {0} threw an MessagingEntityAlreadyExistsException.", topicName);
                     }
                 }
 
                 // Create a client for this topic
                 TopicClient topicClient = TopicClient.CreateFromConnectionString(_connectionString, topicName);
 
-                if (_configuration.RetryPolicy != null)
+                if (_options.RetryPolicy != null)
                 {
-                    topicClient.RetryPolicy = _configuration.RetryPolicy;
+                    topicClient.RetryPolicy = _options.RetryPolicy;
                 }
                 else
                 {
@@ -132,7 +132,7 @@ namespace Microsoft.AspNet.SignalR.ServiceBus
 
                 connectionContext.SetTopicClients(topicClient, topicIndex);
 
-                _logger.WriteInformation("Creation of a new topic client {0} completed successfully.", topicName);
+                _logger.LogInformation("Creation of a new topic client {0} completed successfully.", topicName);
             }
 
             CreateSubscription(connectionContext, topicIndex);
@@ -161,19 +161,19 @@ namespace Microsoft.AspNet.SignalR.ServiceBus
 
                     _namespaceManager.CreateSubscription(subscriptionDescription);
 
-                    _logger.WriteInformation("Creation of a new subscription {0} for topic {1} in the service bus completed successfully.", subscriptionName, topicName);
+                    _logger.LogInformation("Creation of a new subscription {0} for topic {1} in the service bus completed successfully.", subscriptionName, topicName);
                 }
                 catch (MessagingEntityAlreadyExistsException)
                 {
                     // The entity already exists
-                    _logger.WriteInformation("Creation of a new subscription {0} for topic {1} threw an MessagingEntityAlreadyExistsException.", subscriptionName, topicName);
+                    _logger.LogInformation("Creation of a new subscription {0} for topic {1} threw an MessagingEntityAlreadyExistsException.", subscriptionName, topicName);
                 }
 
                 // Create a receiver to get messages
                 string subscriptionEntityPath = SubscriptionClient.FormatSubscriptionPath(topicName, subscriptionName);
                 MessageReceiver receiver = _factory.CreateMessageReceiver(subscriptionEntityPath, ReceiveMode.ReceiveAndDelete);
 
-                _logger.WriteInformation("Creation of a message receive for subscription entity path {0} in the service bus completed successfully.", subscriptionEntityPath);
+                _logger.LogInformation("Creation of a message receive for subscription entity path {0} in the service bus completed successfully.", subscriptionEntityPath);
 
                 connectionContext.SetSubscriptionContext(new SubscriptionContext(topicName, subscriptionName, receiver), topicIndex);
 
@@ -199,12 +199,12 @@ namespace Microsoft.AspNet.SignalR.ServiceBus
                 }
                 catch (UnauthorizedAccessException ex)
                 {
-                    _logger.WriteError(errorMessage, ex.Message);
+                    _logger.LogError(errorMessage, ex.Message);
                     break;
                 }
                 catch (MessagingException ex)
                 {
-                    _logger.WriteError(errorMessage, ex.Message);
+                    _logger.LogError(errorMessage, ex.Message);
                     if (ex.IsTransient)
                     {
                         Thread.Sleep(RetryDelay);
@@ -216,7 +216,7 @@ namespace Microsoft.AspNet.SignalR.ServiceBus
                 }
                 catch (Exception ex)
                 {
-                    _logger.WriteError(errorMessage, ex.Message);
+                    _logger.LogError(errorMessage, ex.Message);
                     Thread.Sleep(RetryDelay);
                 }
             }
@@ -273,13 +273,13 @@ namespace Microsoft.AspNet.SignalR.ServiceBus
             catch (OperationCanceledException)
             {
                 // This means the channel is closed
-                _logger.WriteError("OperationCanceledException was thrown in trying to receive the message from the service bus.");
+                _logger.LogError("OperationCanceledException was thrown in trying to receive the message from the service bus.");
 
                 return;
             }
             catch (Exception ex)
             {
-                _logger.WriteError(ex.Message);
+                _logger.LogError(ex.Message);
                 receiverContext.OnError(ex);
 
                 Thread.Sleep(RetryDelay);
@@ -312,14 +312,14 @@ namespace Microsoft.AspNet.SignalR.ServiceBus
             catch (OperationCanceledException)
             {
                 // This means the channel is closed
-                _logger.WriteError("Receiving messages from the service bus threw an OperationCanceledException, most likely due to a closed channel.");
+                _logger.LogError("Receiving messages from the service bus threw an OperationCanceledException, most likely due to a closed channel.");
 
                 return false;
             }
             catch (MessagingEntityNotFoundException ex)
             {
                 receiverContext.Receiver.CloseAsync()
-                    .ContinueWith(t => _logger.WriteInformation("{0}", t.Exception.ToString()), TaskContinuationOptions.OnlyOnFaulted);
+                    .ContinueWith(t => _logger.LogInformation("{0}", t.Exception.ToString()), TaskContinuationOptions.OnlyOnFaulted);
                 receiverContext.OnError(ex);
 
                 Task.Run(async () =>

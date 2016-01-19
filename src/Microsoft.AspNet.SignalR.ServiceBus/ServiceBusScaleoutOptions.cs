@@ -10,11 +10,11 @@ namespace Microsoft.AspNet.SignalR.ServiceBus
     /// <summary>
     /// Settings for the Service Bus scale-out message bus implementation.
     /// </summary>
-    public class ServiceBusScaleoutConfiguration : ScaleoutConfiguration
+    public class ServiceBusScaleoutOptions : ScaleoutOptions
     {
         private int _topicCount;
 
-        public ServiceBusScaleoutConfiguration()
+        public ServiceBusScaleoutOptions()
         {
             IdleSubscriptionTimeout = TimeSpan.FromHours(1);
 
@@ -25,7 +25,7 @@ namespace Microsoft.AspNet.SignalR.ServiceBus
             OperationTimeout = null;
         }
 
-        public ServiceBusScaleoutConfiguration(string connectionString, string topicPrefix)
+        public ServiceBusScaleoutOptions(string connectionString, string topicPrefix)
             : this()
         {
             if (String.IsNullOrEmpty(connectionString))
@@ -76,7 +76,7 @@ namespace Microsoft.AspNet.SignalR.ServiceBus
         }
 
         /// <summary>
-        /// Gets or sets the message�s time to live value. This is the duration after
+        /// Gets or sets the messages time to live value. This is the duration after
         /// which the message expires, starting from when the message is sent to the
         /// Service Bus. Messages older than their TimeToLive value will expire and no
         /// longer be retained in the message store. Subscribers will be unable to receive
@@ -96,7 +96,7 @@ namespace Microsoft.AspNet.SignalR.ServiceBus
         public TimeSpan BackoffTime { get; set; }
 
         /// <summary>
-        /// Gets or Sets the operation timeout for all Service Bus operations 
+        /// Gets or Sets the operation timeout for all Service Bus operations
         /// </summary>
         public TimeSpan? OperationTimeout { get; set; }
 
