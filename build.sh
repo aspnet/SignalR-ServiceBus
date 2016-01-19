@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+buildFolder=.build
+koreBuildFolder=$buildFolder/KoreBuild-dotnet
+
+nugetPath=$buildFolder/nuget.exe
+
 if test `uname` = Darwin; then
     cachedir=~/Library/Caches/KBuild
 else
@@ -10,30 +15,31 @@ else
     fi
 fi
 mkdir -p $cachedir
+nugetVersion=latest
+cacheNuget=$cachedir/nuget.$nugetVersion.exe
 
-url=https://www.nuget.org/nuget.exe
+nugetUrl=https://dist.nuget.org/win-x86-commandline/$nugetVersion/nuget.exe
 
-if test ! -f $cachedir/nuget.exe; then
-    wget -O $cachedir/nuget.exe $url 2>/dev/null || curl -o $cachedir/nuget.exe --location $url /dev/null
+if test ! -d $buildFolder; then
+    mkdir $buildFolder
 fi
 
-if test ! -e .nuget; then
-    mkdir .nuget
-    cp $cachedir/nuget.exe .nuget/nuget.exe
+if test ! -f $nugetPath; then
+    if test ! -f $cacheNuget; then
+        wget -O $cacheNuget $nugetUrl 2>/dev/null || curl -o $cacheNuget --location $nugetUrl /dev/null
+    fi
+
+    cp $cacheNuget $nugetPath
 fi
 
-if test ! -d packages/KoreBuild; then
-    mono .nuget/nuget.exe install KoreBuild -ExcludeVersion -o packages -nocache -pre
-    mono .nuget/nuget.exe install Sake -ExcludeVersion -Source https://www.nuget.org/api/v2/ -Out packages
+if test ! -d $koreBuildFolder; then
+    mono $nugetPath install KoreBuild-dotnet -ExcludeVersion -o $buildFolder -nocache -pre
+    chmod +x $koreBuildFolder/build/KoreBuild.sh
 fi
 
-if ! type dnvm > /dev/null 2>&1; then
-    source packages/KoreBuild/build/dnvm.sh
+makeFile=makefile.shade
+if [ ! -e $makeFile ]; then
+    makeFile=$koreBuildFolder/build/makefile.shade
 fi
 
-if ! type dnx > /dev/null 2>&1; then
-    dnvm upgrade
-fi
-
-mono packages/Sake/tools/Sake.exe -I packages/KoreBuild/build -f makefile.shade "$@"
-
+./$koreBuildFolder/build/KoreBuild.sh -n $nugetPath -m $makeFile "$@"

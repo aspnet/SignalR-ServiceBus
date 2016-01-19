@@ -26,3 +26,6 @@ nuget.exe
 /SignalR-Server.sln.ide
 *.sln.ide
 project.lock.json
+runtimes/
+.build/
+.testPublish/
