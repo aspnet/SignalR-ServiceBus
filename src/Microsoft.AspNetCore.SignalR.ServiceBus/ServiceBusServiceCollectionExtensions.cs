@@ -2,8 +2,8 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
-using Microsoft.AspNet.SignalR.ServiceBus;
-using Microsoft.AspNet.SignalR.Messaging;
+using Microsoft.AspNetCore.SignalR.ServiceBus;
+using Microsoft.AspNetCore.SignalR.Messaging;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.Framework.DependencyInjection

@@ -1,8 +1,8 @@
 using System;
-using Microsoft.AspNet.SignalR.ServiceBus;
+using Microsoft.AspNetCore.SignalR.ServiceBus;
 using Xunit;
 
-namespace Microsoft.AspNet.SignalR.ServiceBus.Tests
+namespace Microsoft.AspNetCore.SignalR.ServiceBus.Tests
 {
     public class ServiceBusScaleoutConfigurationFacts
     {

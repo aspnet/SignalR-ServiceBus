@@ -2,8 +2,8 @@
   "version": "3.0.0-*",
   "dependencies": {
     "xunit.runner.aspnet": "2.0.0-aspnet-*",
-    "Microsoft.AspNet.SignalR.ServiceBus": "3.0.0-*",
-    "Microsoft.AspNet.Testing": "1.0.0-*",
+    "Microsoft.AspNetCore.SignalR.ServiceBus": "3.0.0-*",
+    "Microsoft.AspNetCore.Testing": "1.0.0-*",
     "Moq": "4.2.1408.619"
   },
   "frameworks": {

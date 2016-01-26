@@ -3,7 +3,7 @@
 
 using Microsoft.ServiceBus.Messaging;
 
-namespace Microsoft.AspNet.SignalR.ServiceBus
+namespace Microsoft.AspNetCore.SignalR.ServiceBus
 {
     internal class SubscriptionContext
     {

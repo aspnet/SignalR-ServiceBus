@@ -2,10 +2,10 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
-using Microsoft.AspNet.SignalR.Messaging;
+using Microsoft.AspNetCore.SignalR.Messaging;
 using Microsoft.ServiceBus;
 
-namespace Microsoft.AspNet.SignalR.ServiceBus
+namespace Microsoft.AspNetCore.SignalR.ServiceBus
 {
     /// <summary>
     /// Settings for the Service Bus scale-out message bus implementation.

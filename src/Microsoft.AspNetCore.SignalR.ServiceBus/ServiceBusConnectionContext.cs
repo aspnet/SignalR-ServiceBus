@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
 
-namespace Microsoft.AspNet.SignalR.ServiceBus
+namespace Microsoft.AspNetCore.SignalR.ServiceBus
 {
     public class ServiceBusConnectionContext : IDisposable
     {

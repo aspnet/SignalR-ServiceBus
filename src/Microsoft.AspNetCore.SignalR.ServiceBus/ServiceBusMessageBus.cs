@@ -6,13 +6,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNet.SignalR.Infrastructure;
-using Microsoft.AspNet.SignalR.Messaging;
+using Microsoft.AspNetCore.SignalR.Infrastructure;
+using Microsoft.AspNetCore.SignalR.Messaging;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.ServiceBus.Messaging;
 
-namespace Microsoft.AspNet.SignalR.ServiceBus
+namespace Microsoft.AspNetCore.SignalR.ServiceBus
 {
     /// <summary>
     /// Uses Windows Azure Service Bus topics to scale-out SignalR applications in web farms.

@@ -5,10 +5,10 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using Microsoft.AspNet.SignalR.Messaging;
+using Microsoft.AspNetCore.SignalR.Messaging;
 using Microsoft.ServiceBus.Messaging;
 
-namespace Microsoft.AspNet.SignalR.ServiceBus
+namespace Microsoft.AspNetCore.SignalR.ServiceBus
 {
     public static class ServiceBusMessage
     {

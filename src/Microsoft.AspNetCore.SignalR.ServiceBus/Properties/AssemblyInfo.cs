@@ -3,4 +3,4 @@
 
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("Microsoft.AspNet.SignalR.ServiceBus.Tests")]
+[assembly: InternalsVisibleTo("Microsoft.AspNetCore.SignalR.ServiceBus.Tests")]
