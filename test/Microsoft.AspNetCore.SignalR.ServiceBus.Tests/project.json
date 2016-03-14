@@ -1,17 +1,16 @@
 {
   "version": "1.0.0-*",
   "dependencies": {
-    "xunit.runner.aspnet": "2.0.0-aspnet-*",
     "Microsoft.AspNetCore.SignalR.ServiceBus": "0.1.0-*",
     "Microsoft.AspNetCore.Testing": "1.0.0-*",
-    "Moq": "4.2.1408.619"
+    "Moq": "4.2.1408.619",
+    "xunit": "2.1.0"
   },
   "frameworks": {
-    "dnx451": {
-      "dependencies": {}
+    "net451": {
+      "frameworkAssemblies": {
+        "System.Threading.Tasks": ""
+      }
     }
-  },
-  "commands": {
-    "test": "xunit.runner.aspnet"
   }
 }

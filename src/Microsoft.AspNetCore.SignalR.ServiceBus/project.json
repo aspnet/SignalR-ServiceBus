@@ -4,7 +4,7 @@
     "Microsoft.AspNetCore.SignalR.Server": "0.1.0-*"
   },
   "frameworks": {
-    "dnx451": {
+    "net451": {
       "dependencies": {
         "Microsoft.WindowsAzure.ConfigurationManager": "2.0.3",
         "WindowsAzure.ServiceBus": "2.5.4"
