@@ -13,7 +13,7 @@ namespace Microsoft.AspNetCore.SignalR.ServiceBus.Tests
     {
         private class Logger : ILogger
         {
-            public IDisposable BeginScopeImpl(object state)
+            public IDisposable BeginScope<TState>(TState state)
             {
                 throw new NotImplementedException();
             }
