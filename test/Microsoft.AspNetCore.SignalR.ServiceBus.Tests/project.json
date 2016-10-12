@@ -4,7 +4,6 @@
     "Microsoft.AspNetCore.SignalR.ServiceBus": "0.2.0-*",
     "Microsoft.AspNetCore.Testing": "1.1.0-*",
     "Moq": "4.6.36-*",
-    "NETStandard.Library": "1.6.1-*",
     "xunit": "2.2.0-*"
   },
   "frameworks": {
