@@ -1,7 +1,7 @@
 {
-  "version": "0.1.0-rtm-21431",
+  "version": "0.1.1",
   "dependencies": {
-    "Microsoft.AspNetCore.SignalR.Server": "0.1.0-rtm-21431"
+    "Microsoft.AspNetCore.SignalR.Server": "0.1.1"
   },
   "frameworks": {
     "net451": {
