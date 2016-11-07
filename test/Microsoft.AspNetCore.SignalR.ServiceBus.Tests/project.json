@@ -1,7 +1,6 @@
 {
-  "version": "1.0.0-*",
   "dependencies": {
-    "Microsoft.AspNetCore.SignalR.ServiceBus": "0.1.0-rtm-21431",
+    "Microsoft.AspNetCore.SignalR.ServiceBus": "0.1.1",
     "Microsoft.AspNetCore.Testing": "1.0.1",
     "Moq": "4.2.1408.619",
     "xunit": "2.1.0"
